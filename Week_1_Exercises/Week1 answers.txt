@@ -1,0 +1,32 @@
+1)Importance of Data Structures and Algorithms:
+Data structures and algorithms are essential for efficiently handling large inventories, enabling quick and effective data storage and retrieval to improve performance and scalability.
+2)Suitable Data Structures for Inventory Management
+Array List: Allows dynamic resizing and fast access by index.
+HashMap: Provides constant-time complexity for insertions, deletions, and lookups using unique keys.
+3)Big O notation helps analyze algorithm efficiency by describing the upper limit of their performance, guiding the selection of the most suitable algorithms for different scenarios.
+4)Search Operations Scenarios
+Best Case: Fastest scenario, often O(1).
+Average Case: Typical scenario, depends on the algorithm.
+Worst Case: Slowest scenario, often O(n) for linear search, O(log n) for binary search.
+5)Types of Sorting Algorithms
+ Bubble Sort
+Bubble Sort repeatedly compares and swaps adjacent elements if they are in the wrong order, with a time complexity of O(n^2), suitable for small datasets.
+ Quick Sort
+Quick Sort partitions the array around a pivot and recursively sorts the sub-arrays, offering an average time complexity of O(n log n), ideal for large datasets.
+Merge Sort
+Merge Sort divides the array into halves, recursively sorts them, and merges the sorted halves, with a consistent time complexity of O(n log n), suitable for large datasets requiring stable sorting.
+6) Array Representation in Memory
+
+ Memory Representation
+Arrays are stored in contiguous memory locations, with each element occupying a fixed amount of space, allowing for direct access via indexing.
+
+ Advantages
+1.Fast Access: Direct indexing enables O(1) time complexity for accessing elements.
+2.Memory Efficiency: Minimal overhead due to contiguous allocation, reducing memory wastage.
+7)Types of Linked Lists
+Singly Linked List: Each node points to the next node, allowing efficient traversal and modifications.
+Doubly Linked List: Each node points to both the next and previous nodes, offering more flexibility in traversal and modifications.
+8)Types of Search
+Linear Search: O(n) time complexity, used for unsorted datasets.
+Binary Search: O(log n) time complexity, used for sorted datasets, offering faster search times.
+9)Recursive algorithms simplify complex problems by breaking them into smaller, more manageable subproblems, making them useful for tasks like financial forecasting.
