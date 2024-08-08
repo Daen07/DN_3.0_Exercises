@@ -1,0 +1,70 @@
+Exercise 8: Implementing Basic AOP with Spring
+
+
+1. Define an Aspect:
+    package com.library.aspect;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class LoggingAspect {
+
+    @Before("execution(* com.library.service.*.*(..))")
+    public void logBefore() {
+        System.out.println("Method execution starting...");
+    }
+
+    @After("execution(* com.library.service.*.*(..))")
+    public void logAfter() {
+        System.out.println("Method execution finished...");
+    }
+}
+
+
+2. Create Advice Methods:
+    - Define advice methods in `LoggingAspect` for logging before and after method execution.
+    
+    ```java
+    @Aspect
+    public class LoggingAspect {
+
+        @Before("execution(* com.library.service.*.*(..))")
+        public void logBefore() {
+            System.out.println("Method execution started");
+        }
+
+        @After("execution(* com.library.service.*.*(..))")
+        public void logAfter() {
+            System.out.println("Method execution ended");
+        }
+    }
+    ```
+
+3. Configure the Aspect:
+    - Update `applicationContext.xml` to register the aspect and enable AspectJ auto-proxying.
+    
+    ```xml
+    <aop:aspectj-autoproxy/>
+    <bean id="loggingAspect" class="com.library.aspect.LoggingAspect"/>
+    ```
+
+4. Test the Aspect:
+     package com.library;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import com.library.service.BookService;
+
+public class LibraryManagementApplication {
+    public static void main(String[] args) {
+                ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+                BookService bookService = context.getBean(BookService.class);
+
+                bookService.manageBooks();
+    }
+}

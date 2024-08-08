@@ -1,0 +1,69 @@
+ Exercise 7: Implementing Constructor and Setter Injection
+
+ Scenario:
+The library management application requires both constructor and setter injection for better control over bean initialization.
+
+
+
+1. Configure Constructor Injection:
+    - Update `applicationContext.xml` to configure constructor injection for `BookService`.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="bookRepository" class="com.library.repository.BookRepository" />
+
+    <bean id="bookService" class="com.library.service.BookService">
+        <constructor-arg ref="bookRepository"/>
+        <property name="bookRepository" ref="bookRepository"/>
+    </bean>
+
+</beans>
+
+
+2. Configure Setter Injection:
+    - Ensure that the `BookService` class has a setter method for `BookRepository` and configure it in `applicationContext.xml`.
+
+package com.library.service;
+
+import com.library.repository.BookRepository;
+
+public class BookService {
+    private BookRepository bookRepository;
+
+    // Constructor for constructor injection
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    // Setter for setter injection
+    public void setBookRepository(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    public void manageBooks() {
+        System.out.println("Managing books...");
+        bookRepository.saveBook();
+    }
+}
+
+
+3. Test the Injection:
+    - Run the `LibraryManagementApplication` main class to verify both constructor and setter injection.
+
+package com.library;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import com.library.service.BookService;
+
+public class LibraryManagementApplication {
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        BookService bookService = (BookService) context.getBean("bookService");
+        bookService.manageBooks();
+    }
+}

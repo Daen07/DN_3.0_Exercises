@@ -1,0 +1,68 @@
+Exercise 6: Cursors
+
+*Scenario 1: Generate monthly statements for all customers.*
+sql
+DECLARE
+    CURSOR transaction_cursor IS
+        SELECT AccountID, SUM(Amount) AS MonthlyTotal
+        FROM Transactions
+        WHERE TransactionDate BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE)
+        GROUP BY AccountID;
+    v_accountID Transactions.AccountID%TYPE;
+    v_monthlyTotal NUMBER;
+BEGIN
+    OPEN transaction_cursor;
+    LOOP
+        FETCH transaction_cursor INTO v_accountID, v_monthlyTotal;
+        EXIT WHEN transaction_cursor%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Account ' || v_accountID || ' has transactions totaling ' || v_monthlyTotal || ' this month.');
+    END LOOP;
+    CLOSE transaction_cursor;
+END;
+/
+
+
+*Scenario 2: Apply annual fee to all accounts.*
+sql
+DECLARE
+    CURSOR account_cursor IS
+        SELECT AccountID, Balance
+        FROM Accounts;
+    v_accountID Accounts.AccountID%TYPE;
+    v_balance Accounts.Balance%TYPE;
+BEGIN
+    OPEN account_cursor;
+    LOOP
+        FETCH account_cursor INTO v_accountID, v_balance;
+        EXIT WHEN account_cursor%NOTFOUND;
+        UPDATE Accounts
+        SET Balance = v_balance - 50 -- assuming annual fee is $50
+        WHERE AccountID = v_accountID;
+    END LOOP;
+    CLOSE account_cursor;
+    COMMIT;
+END;
+/
+
+
+*Scenario 3: Update the interest rate for all loans based on a new policy.*
+sql
+DECLARE
+    CURSOR loan_cursor IS
+        SELECT LoanID, InterestRate
+        FROM Loans;
+    v_loanID Loans.LoanID%TYPE;
+    v_interestRate Loans.InterestRate%TYPE;
+BEGIN
+    OPEN loan_cursor;
+    LOOP
+        FETCH loan_cursor INTO v_loanID, v_interestRate;
+        EXIT WHEN loan_cursor%NOTFOUND;
+        UPDATE Loans
+        SET InterestRate = v_interestRate * 1.05 -- assuming a 5% increase
+        WHERE LoanID = v_loanID;
+    END LOOP;
+    CLOSE loan_cursor;
+    COMMIT;
+END;
+/

@@ -1,0 +1,128 @@
+Implementing Logging with Spring
+
+ Step 1: Add Spring AOP Dependency
+
+Updating the `pom.xml` to include the Spring AOP dependency:
+
+```xml
+<dependencies>
+    <!-- Other dependencies -->
+
+    <!-- Spring AOP Dependency -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>5.3.22</version>
+    </dependency>
+
+    <!-- AspectJ Weaver Dependency -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aspects</artifactId>
+        <version>5.3.22</version>
+    </dependency>
+</dependencies>
+
+
+ Step 2: Create an Aspect for Logging
+
+Create a package `com.library.aspect` and add a class `LoggingAspect` with a method to log execution times.
+
+
+package com.library.aspect;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class LoggingAspect {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
+
+    @Around("execution(* com.library..*(..))")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+
+        Object proceed = joinPoint.proceed();
+
+        long executionTime = System.currentTimeMillis() - start;
+
+        logger.info(joinPoint.getSignature() + " executed in " + executionTime + "ms");
+        return proceed;
+    }
+}
+
+
+Step 3: Enable AspectJ Support
+
+Update your `applicationContext.xml` to enable AspectJ support and register the aspect.
+
+xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- Enable AspectJ support -->
+    <aop:aspectj-autoproxy/>
+
+    <!-- Bean definitions -->
+    <bean id="loggingAspect" class="com.library.aspect.LoggingAspect"/>
+</beans>
+
+
+Step 4: Test the Aspect
+
+Run the `LibraryManagementApplication` main class and observe the console for log messages indicating method execution times.
+
+
+
+
+package com.library;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class LibraryManagementApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+        // Example service to test the aspect
+        LibraryService libraryService = context.getBean(LibraryService.class);
+        libraryService.performLibraryOperation();
+    }
+}
+```
+
+And a simple `LibraryService` class:
+
+
+package com.library;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class LibraryService {
+
+    public void performLibraryOperation() {
+        System.out.println("Performing a library operation...");
+        // Simulate some processing time
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+

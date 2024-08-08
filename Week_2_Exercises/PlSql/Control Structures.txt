@@ -1,0 +1,71 @@
+
+
+ Exercise 1: Control Structures
+
+Scenario 1: Apply a discount to loan interest rates for customers above 60 years old.
+sql
+DECLARE
+    CURSOR customer_cursor IS
+        SELECT CustomerID, LoanAmount, InterestRate
+        FROM Customers C JOIN Loans L ON C.CustomerID = L.CustomerID
+        WHERE EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM C.DOB) > 60;
+    v_customerID Customers.CustomerID%TYPE;
+    v_interestRate Loans.InterestRate%TYPE;
+BEGIN
+    OPEN customer_cursor;
+    LOOP
+        FETCH customer_cursor INTO v_customerID, v_interestRate;
+        EXIT WHEN customer_cursor%NOTFOUND;
+        UPDATE Loans
+        SET InterestRate = v_interestRate * 0.99
+        WHERE CustomerID = v_customerID;
+    END LOOP;
+    CLOSE customer_cursor;
+    COMMIT;
+END;
+/
+
+
+*Scenario 2: Promote a customer to VIP status based on their balance.*
+sql
+DECLARE
+    CURSOR customer_cursor IS
+        SELECT CustomerID, Balance
+        FROM Customers
+        WHERE Balance > 10000;
+    v_customerID Customers.CustomerID%TYPE;
+BEGIN
+    OPEN customer_cursor;
+    LOOP
+        FETCH customer_cursor INTO v_customerID;
+        EXIT WHEN customer_cursor%NOTFOUND;
+        UPDATE Customers
+        SET IsVIP = 'TRUE'
+        WHERE CustomerID = v_customerID;
+    END LOOP;
+    CLOSE customer_cursor;
+    COMMIT;
+END;
+/
+
+
+*Scenario 3: Send reminders to customers whose loans are due within the next 30 days.*
+sql
+DECLARE
+    CURSOR loan_cursor IS
+        SELECT L.CustomerID, C.Name, L.EndDate
+        FROM Loans L JOIN Customers C ON L.CustomerID = C.CustomerID
+        WHERE L.EndDate BETWEEN SYSDATE AND SYSDATE + 30;
+    v_customerID Loans.CustomerID%TYPE;
+    v_name Customers.Name%TYPE;
+    v_endDate Loans.EndDate%TYPE;
+BEGIN
+    OPEN loan_cursor;
+    LOOP
+        FETCH loan_cursor INTO v_customerID, v_name, v_endDate;
+        EXIT WHEN loan_cursor%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Reminder: Dear ' || v_name || ', your loan is due on ' || TO_CHAR(v_endDate, 'YYYY-MM-DD'));
+    END LOOP;
+    CLOSE loan_cursor;
+END;
+/

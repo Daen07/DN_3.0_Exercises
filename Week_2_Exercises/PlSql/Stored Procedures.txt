@@ -1,0 +1,53 @@
+Exercise 3: Stored Procedures
+
+*Scenario 1: Process monthly interest for all savings accounts.*
+sql
+CREATE OR REPLACE PROCEDURE ProcessMonthlyInterest IS
+    CURSOR savings_cursor IS
+        SELECT AccountID, Balance
+        FROM Accounts
+        WHERE AccountType = 'Savings';
+    v_accountID Accounts.AccountID%TYPE;
+    v_balance Accounts.Balance%TYPE;
+BEGIN
+    OPEN savings_cursor;
+    LOOP
+        FETCH savings_cursor INTO v_accountID, v_balance;
+        EXIT WHEN savings_cursor%NOTFOUND;
+        UPDATE Accounts
+        SET Balance = v_balance * 1.01
+        WHERE AccountID = v_accountID;
+    END LOOP;
+    CLOSE savings_cursor;
+    COMMIT;
+END;
+/
+
+
+*Scenario 2: Implement a bonus scheme for employees based on their performance.*
+sql
+CREATE OR REPLACE PROCEDURE UpdateEmployeeBonus(p_department IN VARCHAR2, p_bonus_percentage IN NUMBER) IS
+BEGIN
+    UPDATE Employees
+    SET Salary = Salary * (1 + p_bonus_percentage / 100)
+    WHERE Department = p_department;
+    COMMIT;
+END;
+/
+
+
+*Scenario 3: Transfer funds between accounts.*
+sql
+CREATE OR REPLACE PROCEDURE TransferFunds(p_sourceID IN NUMBER, p_destID IN NUMBER, p_amount IN NUMBER) IS
+    v_balance NUMBER;
+BEGIN
+    SELECT Balance INTO v_balance FROM Accounts WHERE AccountID = p_sourceID FOR UPDATE;
+    IF v_balance < p_amount THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Insufficient funds.');
+    ELSE
+        UPDATE Accounts SET Balance = Balance - p_amount WHERE AccountID = p_sourceID;
+        UPDATE Accounts SET Balance = Balance + p_amount WHERE AccountID = p_destID;
+        COMMIT;
+    END IF;
+END;
+/

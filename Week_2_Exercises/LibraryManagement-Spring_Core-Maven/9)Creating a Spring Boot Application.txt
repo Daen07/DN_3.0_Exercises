@@ -1,0 +1,113 @@
+Exercise 9: Creating a Spring Boot Application
+
+1. Create a Spring Boot Project:
+    * <dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
+2. Add Dependencies:
+    // H2 Database:
+ # H2 Database configuration
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+
+3. Create Application Properties:
+    - Configure database connection properties in `application.properties`.
+    
+    ```properties
+    spring.datasource.url=jdbc:h2:mem:testdb
+    spring.datasource.driverClassName=org.h2.Driver
+    spring.datasource.username=sa
+    spring.datasource.password=password
+    spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+    ```
+
+4. Define Entities and Repositories:
+    - Create `Book` entity and `BookRepository` interface.
+    
+    ```java
+    @Entity
+    public class Book {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        private String title;
+        private String author;
+
+        // Getters and Setters
+    }
+
+    public interface BookRepository extends JpaRepository<Book, Long> {
+    }
+    ```
+
+5. Create a REST Controller:
+    - Create a `BookController` class to handle CRUD operations.
+    
+    ```java
+    @RestController
+    @RequestMapping("/books")
+    public class BookController {
+        @Autowired
+        private BookRepository bookRepository;
+
+        @GetMapping
+        public List<Book> getAllBooks() {
+            return bookRepository.findAll();
+        }
+
+        @PostMapping
+        public Book createBook(@RequestBody Book book) {
+            return bookRepository.save(book);
+        }
+
+        @PutMapping("/{id}")
+        public Book updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
+            Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+            book.setTitle(bookDetails.getTitle());
+            book.setAuthor(bookDetails.getAuthor());
+            return bookRepository.save(book);
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+            Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+            bookRepository.delete(book);
+            return ResponseEntity.ok().build();
+        }
+    }
+    ```
+
+6. Run the Application:
+    package com.library;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class LibraryManagementApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(LibraryManagementApplication.class, args);
+    }
+}

@@ -1,0 +1,68 @@
+Exercise 1: Configuring a Basic Spring Application
+
+1. Setting Up a Spring Project:
+    - Creating a Maven project named `LibraryManagement`.
+    - Adding Spring Core dependencies in the `pom.xml` file.
+    
+    ```xml
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.20</version>
+        </dependency>
+    </dependencies>
+    
+
+2. Configuring the Application Context:
+    - Creating an XML configuration file named `applicationContext.xml` in the `src/main/resources` directory.
+    - Defining beans for `BookService` and `BookRepository` in the XML file.
+    
+    ```xml
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+        <bean id="bookService" class="com.library.service.BookService"/>
+        <bean id="bookRepository" class="com.library.repository.BookRepository"/>
+    </beans>
+    
+
+3. Defining Service and Repository Classes:
+    - Creating a package `com.library.service` and add a class `BookService`.
+    - Creating a package `com.library.repository` and add a class `BookRepository`.
+    
+    java
+    // BookService.java
+    package com.library.service;
+
+    public class BookService {
+        // Service methods
+    }
+
+    // BookRepository.java
+    package com.library.repository;
+
+    public class BookRepository {
+        // Repository methods
+    }
+    
+
+4. Running the Application:
+    - Creating a main class to load the Spring context and testing the configuration.
+    
+    java
+    package com.library;
+
+    import org.springframework.context.ApplicationContext;
+    import org.springframework.context.support.ClassPathXmlApplicationContext;
+    import com.library.service.BookService;
+
+    public class LibraryManagementApplication {
+        public static void main(String[] args) {
+            ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+            BookService bookService = context.getBean(BookService.class);
+            
+        }
+    }
