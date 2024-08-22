@@ -1,0 +1,24 @@
+Exercise 5: Online Bookstore - Customizing Response Status and Headers:
+
+1.Customize Response Status:
+
+* Use `@ResponseStatus` to define custom HTTP status codes.
+
+ @ResponseStatus(HttpStatus.CREATED)
+   @PostMapping("/books")
+   public Book createBook(@RequestBody Book book) {
+       return bookRepository.save(book);
+   }
+
+2.Add Custom Headers:
+
+* Use `ResponseEntity` to add custom headers to responses.
+
+ @GetMapping("/{id}")
+   public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+       Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+       return ResponseEntity.ok()
+           .header("Custom-Header", "CustomValue")
+           .body(book);
+   }
+

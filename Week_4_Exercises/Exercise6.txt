@@ -1,0 +1,42 @@
+Exercise 6: **Exception Handling in REST Controllers:
+
+1.Create a Global Exception Handler:
+
+ @ControllerAdvice
+   public class GlobalExceptionHandler {
+
+       @ExceptionHandler(ResourceNotFoundException.class)
+       public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+           ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+           return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+       }
+
+       @ExceptionHandler(Exception.class)
+       public ResponseEntity<?> globalExceptionHandler(Exception ex, WebRequest request) {
+           ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+           return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+   }
+
+2.Create Custom Exception Classes:
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+   public class ResourceNotFoundException extends RuntimeException {
+       public ResourceNotFoundException(String message) {
+           super(message);
+       }
+   }
+
+3.Define Error Details Class:
+
+ public class ErrorDetails {
+       private Date timestamp;
+       private String message;
+       private String details;
+
+       public ErrorDetails(Date timestamp, String message, String details) {
+           this.timestamp = timestamp;
+           this.message = message;
+           this.details = details;
+       }
+   }

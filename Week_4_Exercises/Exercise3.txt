@@ -1,0 +1,22 @@
+Exercise 3: Online Bookstore - Handling Path Variables and Query Parameters:
+
+1.Handle Path Variables:
+
+ @GetMapping("/{id}")
+   public Book getBookById(@PathVariable Long id) {
+       return bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+   }
+
+2.Handle Query Parameters:
+
+ @GetMapping("/search")
+   public List<Book> searchBooks(@RequestParam(required = false) String title, 
+                                 @RequestParam(required = false) String author) 
+{
+       return bookRepository.findAll().stream()
+           .filter(book -> (title == null || book.getTitle().contains(title)) &&
+                           (author == null || book.getAuthor().contains(author)))
+           .collect(Collectors.toList());
+   }
+
+

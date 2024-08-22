@@ -1,0 +1,21 @@
+Exercise 4: Online Bookstore - Processing Request Body and Form Data:
+
+1.Handle JSON Request Body:
+
+ @PostMapping("/customers")
+   public Customer createCustomer(@RequestBody Customer customer) {
+       return customerRepository.save(customer);
+   }
+
+2.Handle Form Data:
+
+ @PostMapping("/customers/form")
+   public Customer createCustomerFromForm(@RequestParam String name, 
+                                          @RequestParam String email) {
+       Customer customer = new Customer();
+       customer.setName(name);
+       customer.setEmail(email);
+       return customerRepository.save(customer);
+}
+
+

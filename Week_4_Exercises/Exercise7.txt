@@ -1,0 +1,46 @@
+Exercise 7: **Introduction to Data Transfer Objects (DTOs):-
+
+1.Create DTO Classes:
+
+* Define `BookDTO` and `CustomerDTO` to be used for transferring data.
+
+ public class BookDTO {
+       private Long id;
+       private String title;
+       private String author;
+       private Double price;
+       private String isbn;
+
+   }
+
+   public class CustomerDTO {
+       private Long id;
+       private String name;
+       private String email;
+
+       
+   }
+
+2.Map Entities to DTOs:
+ 
+* Use a mapping library like MapStruct or ModelMapper.
+
+ @Mapper(componentModel = "spring")
+   public interface BookMapper {
+       BookDTO toDto(Book book);
+       Book toEntity(BookDTO bookDto);
+   }
+
+3.Customize Serialization/Deserialization:
+
+ public class BookDTO {
+       @JsonProperty("book_id")
+       private Long id;
+
+       @JsonProperty("book_title")
+       private String title;
+
+         }
+
+
+
