@@ -1,0 +1,52 @@
+Exercise 12: Securing RESTful Endpoints with Spring Security
+Steps:
+Add Spring Security:
+
+Add the Spring Security dependency to your project.
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+Implement JWT Authentication:
+
+Create JWT utility classes, filters, and security configuration.
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+            .authorizeRequests().antMatchers("/login", "/register").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+    }
+
+    // Other configurations like authentication manager, password encoder, etc.
+}
+
+Protect Endpoints:
+
+Use @PreAuthorize or method-level security annotations.
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
+    public Book createBook(@RequestBody Book book) {
+        return bookRepository.save(book);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{id}")
+    public Book getBookById(@PathVariable Long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+    }
+}

@@ -1,0 +1,39 @@
+Exercise 9: Understanding HATEOAS
+Steps:
+Add Links to Resources:
+
+Use Spring HATEOAS to add links to your API responses.
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+    @Autowired
+    private BookRepository bookRepository;
+
+    @GetMapping("/{id}")
+    public EntityModel<Book> getBookById(@PathVariable Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+
+        EntityModel<Book> resource = EntityModel.of(book);
+        WebMvcLinkBuilder linkToBooks = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllBooks());
+        resource.add(linkToBooks.withRel("all-books"));
+        return resource;
+    }
+
+    @GetMapping
+    public List<EntityModel<Book>> getAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+            .map(book -> {
+                EntityModel<Book> resource = EntityModel.of(book);
+                WebMvcLinkBuilder linkToBook = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getBookById(book.getId()));
+                resource.add(linkToBook.withRel("self"));
+                return resource;
+            })
+            .collect(Collectors.toList());
+    }
+}
+
+Build Hypermedia-Driven APIs:
+
+Ensure that the API responses are navigable by including links.

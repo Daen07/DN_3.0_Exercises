@@ -1,0 +1,30 @@
+Exercise 10: Configuring Content Negotiation
+Steps:
+Configure Content Negotiation:
+
+Modify the Spring Boot configuration to support different media types.
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.favorPathExtension(false)
+            .favorParameter(true)
+            .parameterName("mediaType")
+            .ignoreAcceptHeader(false)
+            .useRegisteredExtensionsOnly(false)
+            .defaultContentType(MediaType.APPLICATION_JSON)
+            .mediaType("xml", MediaType.APPLICATION_XML)
+            .mediaType("json", MediaType.APPLICATION_JSON);
+    }
+}
+
+Handle Accept Headers:
+
+Implement logic in your controller to produce and consume different media types.
+
+@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+public List<Book> getAllBooks() {
+    return bookRepository.findAll();
+}

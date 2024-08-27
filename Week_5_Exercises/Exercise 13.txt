@@ -1,0 +1,71 @@
+Exercise 13: Online Bookstore - Unit Testing REST Controllers
+Objective: Write unit tests for your bookstore's REST controllers using JUnit and Mockito.
+
+Steps:
+Set Up JUnit and Mockito:
+
+Add the necessary dependencies for JUnit and Mockito in your pom.xml file if using Maven, or in your build.gradle if using Gradle.
+Example for Maven:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+
+Example for Mockito:
+
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>3.9.0</version>
+    <scope>test</scope>
+</dependency>
+
+Create Test Class:
+
+Create a test class for your REST controller. For example, if your controller is BookController, create a BookControllerTest class in the src/test/java directory.
+Set Up MockMvc:
+
+Use MockMvc to perform the HTTP requests in your tests. Initialize MockMvc in the @BeforeEach setup method.
+
+Example:
+
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(BookController.class)
+public class BookControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private BookService bookService;
+
+    // Initialize MockMvc object
+    @BeforeEach
+    public void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new BookController()).build();
+    }
+
+    // Write test cases here
+}
+
+Write Unit Test Cases:
+
+Write test methods to cover various scenarios like successful requests, invalid inputs, and error handling.
+Example test method:
+
+@Test
+public void testGetBookById() throws Exception {
+    Book book = new Book(1L, "Spring Framework", "Author", 500, "1234567890");
+    Mockito.when(bookService.getBookById(1L)).thenReturn(book);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/books/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.title").value("Spring Framework"))
+            .andExpect(jsonPath("$.author").value("Author"));
+}
+
+Ensure Test Coverage:
+
+Aim for comprehensive test coverage by testing all endpoints and possible cases (success, failure, exceptions).

@@ -1,0 +1,32 @@
+Exercise 11: Integrating Spring Boot Actuator
+Steps:
+Add Actuator Dependency:
+
+Add the Spring Boot Actuator dependency to your pom.xml or build.gradle.
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+Expose Actuator Endpoints:
+
+Customize which endpoints are exposed in application.properties.
+
+management.endpoints.web.exposure.include=health,info,metrics
+
+Expose Custom Metrics:
+
+Implement custom metrics using Micrometer or similar libraries.
+
+@Component
+public class CustomMetrics {
+
+    private final MeterRegistry meterRegistry;
+
+    public CustomMetrics(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        Gauge.builder("books.count", () -> bookRepository.count()).register(meterRegistry);
+    }
+}
+

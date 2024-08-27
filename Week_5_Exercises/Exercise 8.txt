@@ -1,0 +1,273 @@
+Exercise 8: Implementing CRUD Operations
+Steps:
+Implement CRUD Endpoints:
+
+The CRUD operations for Book and Customer entities were already covered in Exercise 2. You can repeat similar steps for Customer.
+
+@RestController
+@RequestMapping("/customers")
+public class CustomerController {
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @GetMapping
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Customer getCustomerById(@PathVariable Long id) {
+        return customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+    }
+
+    @PostMapping
+    public Customer createCustomer(@RequestBody Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @PutMapping("/{id}")
+    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        customer.setName(customerDetails.getName());
+        customer.setEmail(customerDetails.getEmail());
+        return customerRepository.save(customer);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        customerRepository.delete(customer);
+        return ResponseEntity.ok().build();
+    }
+}
+
+Validating Input Data:
+
+Use annotations like @NotNull, @Size, and @Min in entity classes.
+
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    @Size(min = 2, message = "Title should have at least 2 characters")
+    private String title;
+
+    @NotNull
+    @Size(min = 2, message = "Author should have at least 2 characters")
+    private String author;
+
+    @Min(value = 0, message = "Price should be a positive number")
+    private Double price;
+
+    private String isbn;
+
+    // Getters and setters
+}
+
+Implement Optimistic Locking:
+
+Use JPA versioning for optimistic locking.
+
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Version
+    private int version;
+
+    // Other fields, getters, and setters
+}
+
+
+
+Here are the detailed steps and code snippets for the remaining exercises:
+
+Exercise 6: Exception Handling in REST Controllers
+Steps:
+Create a Global Exception Handler:
+
+Use @ControllerAdvice to create a global exception handler class.
+java
+Copy code
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> globalExceptionHandler(Exception ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+Create Custom Exception Classes:
+
+Define a custom exception like ResourceNotFoundException.
+java
+Copy code
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+Define Error Details Class:
+
+Create a class to structure error responses.
+java
+Copy code
+public class ErrorDetails {
+    private Date timestamp;
+    private String message;
+    private String details;
+
+    public ErrorDetails(Date timestamp, String message, String details) {
+        this.timestamp = timestamp;
+        this.message = message;
+        this.details = details;
+    }
+
+    // Getters and setters
+}
+Exercise 7: Introduction to Data Transfer Objects (DTOs)
+Steps:
+Create DTO Classes:
+
+Define BookDTO and CustomerDTO to be used for transferring data.
+java
+Copy code
+public class BookDTO {
+    private Long id;
+    private String title;
+    private String author;
+    private Double price;
+    private String isbn;
+
+    // Getters and setters
+}
+
+public class CustomerDTO {
+    private Long id;
+    private String name;
+    private String email;
+
+    // Getters and setters
+}
+Map Entities to DTOs:
+
+Use a mapping library like MapStruct or ModelMapper.
+java
+Copy code
+@Mapper(componentModel = "spring")
+public interface BookMapper {
+    BookDTO toDto(Book book);
+    Book toEntity(BookDTO bookDto);
+}
+Customize Serialization/Deserialization:
+
+Use Jackson annotations for custom JSON processing.
+java
+Copy code
+public class BookDTO {
+    @JsonProperty("book_id")
+    private Long id;
+
+    @JsonProperty("book_title")
+    private String title;
+
+    // Other fields and custom annotations
+}
+Exercise 8: Implementing CRUD Operations
+Steps:
+Implement CRUD Endpoints:
+
+The CRUD operations for Book and Customer entities were already covered in Exercise 2. You can repeat similar steps for Customer.
+java
+Copy code
+@RestController
+@RequestMapping("/customers")
+public class CustomerController {
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @GetMapping
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Customer getCustomerById(@PathVariable Long id) {
+        return customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+    }
+
+    @PostMapping
+    public Customer createCustomer(@RequestBody Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @PutMapping("/{id}")
+    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        customer.setName(customerDetails.getName());
+        customer.setEmail(customerDetails.getEmail());
+        return customerRepository.save(customer);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        customerRepository.delete(customer);
+        return ResponseEntity.ok().build();
+    }
+}
+Validating Input Data:
+
+Use annotations like @NotNull, @Size, and @Min in entity classes.
+java
+Copy code
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    @Size(min = 2, message = "Title should have at least 2 characters")
+    private String title;
+
+    @NotNull
+    @Size(min = 2, message = "Author should have at least 2 characters")
+    private String author;
+
+    @Min(value = 0, message = "Price should be a positive number")
+    private Double price;
+
+    private String isbn;
+
+    // Getters and setters
+}
+Implement Optimistic Locking:
+
+Use JPA versioning for optimistic locking.
+java
+Copy code
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Version
+    private int version;
+
+    // Other fields, getters, and setters
+}

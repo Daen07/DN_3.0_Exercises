@@ -1,0 +1,64 @@
+Exercise 14: Online Bookstore - Integration Testing for REST Services
+Objective: Write integration tests for your bookstore's RESTful services.
+
+Steps:
+Set Up Spring Test:
+
+Add the Spring Test dependency to your pom.xml if not already included:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+
+Use MockMvc for Integration Testing:
+
+Similar to unit tests, MockMvc can be used for integration testing but with a different setup that integrates with the entire Spring context.
+Example:
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class BookstoreIntegrationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    // Write integration tests here
+}
+
+Database Integration:
+
+Use an in-memory database like H2 for integration testing to avoid affecting your production or development databases.
+Add H2 dependency:
+
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>test</scope>
+</dependency>
+
+Configure the in-memory database in application-test.properties:
+
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+Write Integration Test Cases:
+
+Write test cases to cover the full flow of the application, including service and database layers.
+Example test case:
+
+@Test
+public void testCreateBook() throws Exception {
+    String bookJson = "{\"title\":\"Spring Boot\", \"author\":\"Author\", \"price\":500, \"isbn\":\"1234567890\"}";
+
+    mockMvc.perform(MockMvcRequestBuilders.post("/books")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(bookJson))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").exists());
+}
+

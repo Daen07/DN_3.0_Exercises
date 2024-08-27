@@ -1,0 +1,42 @@
+Exercise 15: Online Bookstore - API Documentation with Swagger
+Objective: Document your bookstore's REST APIs using Swagger and Springdoc.
+
+Steps:
+Add Swagger or Springdoc Dependencies:
+
+Add Springdoc OpenAPI dependency to your pom.xml:
+
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-ui</artifactId>
+    <version>1.5.10</version>
+</dependency>
+
+Enable Swagger Documentation:
+
+Springdoc OpenAPI automatically generates Swagger UI at /swagger-ui.html when you start your Spring Boot application.
+Annotate REST Controllers:
+
+Use annotations like @Operation, @ApiResponse, and @Parameter to document your API endpoints and their parameters.
+Example:
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+
+    @Operation(summary = "Get a book by its ID")
+    @ApiResponse(responseCode = "200", description = "Found the book",
+        content = {@Content(mediaType = "application/json",
+        schema = @Schema(implementation = Book.class))})
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+        // Your code here
+    }
+
+    // Other methods
+}
+
+Generate and Review API Documentation:
+
+Start your Spring Boot application and navigate to http://localhost:8080/swagger-ui.html (or the port you're using) to see the automatically generated Swagger UI documentation.
+Review the documentation for accuracy and completeness.
